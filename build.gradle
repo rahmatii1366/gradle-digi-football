@@ -87,6 +87,8 @@ subprojects {
         maven { url 'https://plugins.gradle.org/m2' }
     }
 
+
+
     // Artifacts
     jar {
         manifest.attributes provider: 'gradle'
@@ -273,7 +275,28 @@ subprojects {
         tasks.findAll { task -> task.name.startsWith('generateSwaggerCode') }
     }
 
-    apply from: file("$rootProject.projectDir/gradle/heroku/stage.gradle")
+    task copyToLib(type: Copy, group: 'build') {
+        from "$buildDir/libs"
+        into "$rootProject.buildDir/libs"
+    }
+
+    build {
+        dependsOn copyToLib
+    }
+    
+    copyToLib {
+        dependsOn 'bootJar'
+    }
+
+//    task stage(group: 'build', dependsOn: 'copyTolib')
+    
+//    task stage(dependsOn: ['clean', 'build'])
+
+//    stage.dependsOn {
+//        copyToLib
+//    }
+
+//    apply from: file("$rootProject.projectDir/gradle/heroku/stage.gradle")
 }
 
 sonarqube {
