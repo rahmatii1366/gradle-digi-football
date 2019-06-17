@@ -32,8 +32,6 @@ out/**
 build/
 build/**
 **/build/**
-/gradle/wrapper
-/gradle/wrapper/**
 
 ### VS Code ###
 .vscode/
