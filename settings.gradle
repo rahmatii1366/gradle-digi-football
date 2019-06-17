@@ -1,0 +1,4 @@
+rootProject.name = 'gradle-digi-football'
+
+include 'core'
+include 'user'

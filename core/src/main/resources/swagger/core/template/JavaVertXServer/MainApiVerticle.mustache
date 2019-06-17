@@ -1,0 +1,122 @@
+package {{apiPackage}};
+
+import java.io.File;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.github.phiz71.vertx.swagger.router.OperationIdServiceIdResolver;
+import com.github.phiz71.vertx.swagger.router.SwaggerRouter;
+
+import io.swagger.models.Swagger;
+import io.swagger.parser.SwaggerParser;
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.CompositeFuture;
+import io.vertx.core.Context;
+import io.vertx.core.Future;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.eventbus.DeliveryOptions;
+import io.vertx.core.file.FileSystem;
+import io.vertx.core.http.HttpServer;
+import io.vertx.core.json.Json;
+import io.vertx.core.Vertx;
+import io.vertx.ext.web.Router;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+
+@Component("{{apiPackage}}.mainApiVerticle")
+public class MainApiVerticle extends AbstractVerticle {
+
+    private static final Logger logger = LoggerFactory.getLogger(MainApiVerticle.class);
+
+    public static final String SERVICE_URL = "{{host}}";
+    public static final String SERVICE_NAME = SERVICE_URL.replaceAll(":{{serverPort}}", "");
+    public static final Integer SERVICE_PORT = {{serverPort}};
+
+    private final AtomicReference<HttpServer> mainHttpServer = new AtomicReference<>();
+
+    @Value("${piana.message.timeout:40000}")
+    private Long messageTimeout;
+    {{#apiInfo}}{{#apis}}
+    @Autowired
+    private {{classname}}Verticle verticle{{classname}};
+    {{/apis}}{{/apiInfo}}
+    protected Router router;
+
+    @Override
+    public void init(Vertx vertx, Context context) {
+        super.init(vertx, context);
+        router = Router.router(vertx);
+    }
+
+    @Override
+    public void start(Future<Void> startFuture) throws Exception {
+        final HttpServer httpServer = mainHttpServer.get();
+        if (httpServer != null) return;
+
+        final Future<Buffer> fileFuture = Future.future();
+        Json.mapper.registerModule(new JavaTimeModule());
+        final FileSystem vertxFileSystem = vertx.fileSystem();
+        vertxFileSystem.readFile(getClass().getPackage().getName().replace(".", File.separator) + File.separator + "swagger.json", fileFuture.completer());
+
+        fileFuture.compose(file -> {
+            final Swagger swagger = new SwaggerParser().parse(file.toString(Charset.forName("utf-8")));
+            final Router swaggerRouter = SwaggerRouter.swaggerRouter(router, swagger, vertx.eventBus(), new OperationIdServiceIdResolver(), routingContext -> {
+                DeliveryOptions options = new DeliveryOptions();
+                options.setSendTimeout(messageTimeout);
+                return options;
+            });
+            return Future.succeededFuture(swaggerRouter);
+        }).compose(swaggerRouter -> {
+            final CompositeFuture verticlesFuture = deployVerticles();
+            return verticlesFuture.compose(nothing -> Future.succeededFuture(swaggerRouter));
+        }).compose(swaggerRouter -> {
+            final Future<HttpServer> httpFuture = Future.future();
+            mainHttpServer.set(vertx.createHttpServer().requestHandler(swaggerRouter::accept).listen(SERVICE_PORT, httpFuture.completer()));
+            return httpFuture;
+        }).setHandler(event -> {
+            if (event.succeeded()) {
+                logger.info(String.format("All verticles are deployed successfully and the http server is listening on port '%d'", SERVICE_PORT));
+                startFuture.complete();
+            } else {
+                logger.error("FATAL_ERROR", "There is a fatal error in deploying verticles:", event.cause());
+                startFuture.fail(event.cause());
+            }
+        });
+    }
+
+    @Override
+    public void stop(Future<Void> stopFuture) throws Exception {
+        final HttpServer httpServer = mainHttpServer.get();
+        if (httpServer == null) return;
+
+        final Future<Void> httpFuture = Future.future();
+        httpServer.close(httpFuture.completer());
+        httpFuture.setHandler(event -> {
+            if (event.succeeded()) {
+                mainHttpServer.set(null);
+                logger.info(String.format("The http server on '%d' port is closed", SERVICE_PORT));
+                stopFuture.complete();
+            } else {
+                logger.error("FATAL_ERROR", "There is a fatal error in undeploying verticles:", event.cause());
+                stopFuture.fail(event.cause());
+            }
+        });
+    }
+
+    private CompositeFuture deployVerticles() {
+        final List<Future> verticleFutureList = new ArrayList<>();
+        {{#apiInfo}}{{#apis}}
+        final Future<String> future{{classname}} = Future.future();
+        vertx.deployVerticle(verticle{{classname}}, future{{classname}}.completer());
+        verticleFutureList.add(future{{classname}});
+        {{/apis}}{{/apiInfo}}
+        return CompositeFuture.all(verticleFutureList);
+    }
+}

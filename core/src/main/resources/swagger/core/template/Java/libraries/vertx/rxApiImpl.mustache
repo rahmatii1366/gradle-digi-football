@@ -1,0 +1,62 @@
+package {{package}}.rxjava;
+
+{{#imports}}import {{import}};{{/imports}}
+
+import java.util.*;
+
+import io.reactive.Single;
+import io.reactive.Completable;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
+import io.vertx.core.Future;
+
+public class {{classname}} {
+
+	private final {{package}}.{{classname}} delegate;
+
+	public {{classname}}({{package}}.{{classname}} delegate) {
+	    this.delegate = delegate;
+    }
+
+	public {{package}}.{{classname}} getDelegate() {
+	    return delegate;
+	}
+
+    {{#operations}}
+    {{#operation}}
+    /**
+     * {{summary}}
+     * {{notes}}
+     {{#allParams}}
+     * @param {{paramName}} {{description}}{{#required}} (required){{/required}}{{^required}} (optional{{#defaultValue}}, default to {{{.}}}{{/defaultValue}}){{/required}}
+     {{/allParams}}
+     * @param resultHandler Asynchronous result handler
+     */
+    public void {{operationId}}({{#allParams}}{{{dataType}}} {{paramName}}, {{/allParams}}Handler<AsyncResult<{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}Void{{/returnType}}>> resultHandler) {
+        {{#useRxJava2}}delegate.{{operationId}}({{#hasParams}}{{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}{{/hasParams}}).subscribe(
+                        {{#returnType}}result{{/returnType}}{{^returnType}}(){{/returnType}} -> resultHandler.handle(Future.succeededFuture({{#returnType}}result{{/returnType}})),
+                        error -> resultHandler.handle(Future.failedFuture(error)));{{/useRxJava2}}
+        {{^useRxJava2}}delegate.{{operationId}}({{#allParams}}{{paramName}}, {{/allParams}}resultHandler);{{/useRxJava2}}
+    }
+
+    /**
+     * {{summary}}
+     * {{notes}}
+     {{#allParams}}
+     * @param {{paramName}} {{description}}{{#required}} (required){{/required}}{{^required}} (optional{{#defaultValue}}, default to {{{.}}}{{/defaultValue}}){{/required}}
+     {{/allParams}}
+     * @return Asynchronous result handler (RxJava Single)
+     */
+    public {{#returnType}}Single<{{{returnType}}}>{{/returnType}}{{^returnType}}Completable{{/returnType}} rx{{operationIdCamelCase}}({{#hasParams}}{{#allParams}}{{{dataType}}} {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}{{/hasParams}}) {
+        {{#useRxJava2}}return delegate.{{operationId}}({{#hasParams}}{{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}{{/hasParams}});{{/useRxJava2}}
+        {{^useRxJava2}}return Single.create(new io.vertx.rx.java.SingleOnSubscribeAdapter<>(fut -> {
+            delegate.{{operationId}}({{#allParams}}{{paramName}}, {{/allParams}}fut);
+        }));{{/useRxJava2}}
+    }
+    {{/operation}}
+    {{/operations}}
+
+    public static {{classname}} newInstance({{package}}.{{classname}} arg) {
+        return arg != null ? new {{classname}}(arg) : null;
+    }
+}

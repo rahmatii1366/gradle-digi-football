@@ -1,0 +1,5 @@
+jar {
+    baseName = 'digi-football'
+    archivesBaseName = baseName
+    manifest.attributes title: 'Digi Footall Core'
+}

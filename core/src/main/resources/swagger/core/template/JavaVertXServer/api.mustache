@@ -1,0 +1,23 @@
+package {{package}};
+
+{{#imports}}import {{import}};
+{{/imports}}
+
+{{#rxInterface}}
+import io.reactivex.Completable;
+import io.reactivex.Single;
+{{/rxInterface}}
+
+import java.util.List;
+import java.util.Map;
+
+public interface {{classname}}  {
+
+{{#operations}}
+{{#operation}}
+    {{#rxInterface}}
+        {{>RxMethod}}
+    {{/rxInterface}}
+{{/operation}}
+{{/operations}}
+}

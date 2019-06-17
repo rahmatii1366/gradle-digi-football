@@ -1,0 +1,27 @@
+piana:
+  message.timeout: 300000
+spring:
+# Disable actuator health check for email
+management:
+  health:
+    mail:
+      enabled: false
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://raja.db.elephantsql.com:5432/jmlmhzoa
+    username: jmlmhzoa
+    password: LpAQ3hPuomKH1uwWet_3ybpjX602SVZN
+  jpa:
+    properties:
+      hibernate:
+        jdbc.lob.non_contextual_creation: true
+
+# Logging settings
+logging:
+  pattern:
+    console: '%clr(%d{yyyy-MM-dd HH:mm:ss}){magenta} %clr(%-5level) %clr(%logger:){cyan} %clr(%marker){red} %msg%n'
+  level:
+    root: info
+    com.bitex: debug
+    org.apache.http: debug
+

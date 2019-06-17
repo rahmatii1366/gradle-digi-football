@@ -1,0 +1,127 @@
+package {{package}};
+
+{{#imports}}import {{import}};
+{{/imports}}
+
+{{#useRxJava2}}
+import io.reactivex.Completable;
+import io.reactivex.Single;
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
+import io.vertx.rx.java.SingleOnSubscribeAdapter;
+
+import io.vertx.core.Vertx;
+import io.vertx.core.Future;
+import io.vertx.core.Context;
+import io.vertx.core.AsyncResult;
+
+import com.netflix.hystrix.HystrixCommandGroupKey;
+import com.netflix.hystrix.HystrixCommandKey;
+import com.netflix.hystrix.HystrixCommandProperties;
+import com.netflix.hystrix.HystrixObservableCommand;
+{{/useRxJava2}}
+import io.vertx.core.MultiMap;
+import io.vertx.core.json.JsonObject;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.*;
+
+import {{invokerPackage}}.ApiClient;
+import {{invokerPackage}}.ApiException;
+import {{invokerPackage}}.Configuration;
+import {{invokerPackage}}.Pair;
+
+@Component("{{package}}.{{classname}}Impl")
+public class {{classname}}Impl implements {{classname}} {
+
+    @Value("${piana.message.timeout:40000}")
+    private Integer messageTimeout;
+
+    @Autowired
+    private ApiClient {{localVariablePrefix}}apiClient;
+    @Autowired
+    private Vertx vertx;
+    {{#operations}}
+    {{#operation}}
+
+    @Override
+    public {{#useRxJava2}}{{>RxMethod}}{{/useRxJava2}} {
+        {{#useRxJava2}}return Single.create(new SingleOnSubscribeAdapter<>(resultHandler -> { {{/useRxJava2}}
+
+            vertx.runOnContext(v -> {
+                Context context = vertx.getOrCreateContext();
+                HystrixObservableCommand.Setter setter = HystrixObservableCommand.Setter
+                                .withGroupKey(HystrixCommandGroupKey.Factory.asKey("{{classname}}Group"))
+                                .andCommandKey(HystrixCommandKey.Factory.asKey("{{operationId}}"))
+                                .andCommandPropertiesDefaults(HystrixCommandProperties.Setter().withExecutionTimeoutInMilliseconds(messageTimeout));
+
+                HystrixObservableCommand<{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}Object{{/returnType}}> observableCommand =
+                        new HystrixObservableCommand<{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}Object{{/returnType}}> (setter) {
+
+                    @Override
+                    protected Observable<{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}Object{{/returnType}}> construct() {
+
+                            return Single.create(new SingleOnSubscribeAdapter<{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}Object{{/returnType}}> ( handler -> {
+
+                            Object {{localVariablePrefix}}localVarBody = {{#bodyParam}}{{paramName}}{{/bodyParam}}{{^bodyParam}}null{{/bodyParam}};
+                            {{#allParams}}{{#required}}
+                            // verify the required parameter '{{paramName}}' is set
+                            if ({{paramName}} == null) {
+                                handler.handle(ApiException.fail(400, "400"));
+                                return;
+                            }
+                            {{/required}}{{/allParams}}
+                            // create path and map variables
+                            String {{localVariablePrefix}}localVarPath = "{{{path}}}"{{#pathParams}}.replaceAll("\\{" + "{{baseName}}" + "\\}", {{{paramName}}}.toString()){{/pathParams}};
+
+                            // query params
+                            List<Pair> {{localVariablePrefix}}localVarQueryParams = new ArrayList<>();
+                            {{#queryParams}}
+                             {{localVariablePrefix}}localVarQueryParams.addAll({{localVariablePrefix}}apiClient.parameterToPairs("{{#collectionFormat}}{{{collectionFormat}}}{{/collectionFormat}}", "{{baseName}}", {{paramName}}));
+                            {{/queryParams}}
+
+                            // header params
+                            MultiMap {{localVariablePrefix}}localVarHeaderParams = MultiMap.caseInsensitiveMultiMap();
+                            {{#headerParams}}if ({{paramName}} != null)
+                            {{localVariablePrefix}}localVarHeaderParams.add("{{baseName}}", {{localVariablePrefix}}apiClient.parameterToString({{paramName}}));
+                            {{/headerParams}}
+
+                            // form params
+                            // TODO: sending files within multipart/form-data is not supported yet (because of vertx web-client)
+                            Map<String, Object> {{localVariablePrefix}}localVarFormParams = new HashMap<>();
+                            {{#formParams}}if ({{paramName}} != null) {{localVariablePrefix}}localVarFormParams.put("{{baseName}}", {{paramName}});
+                            {{/formParams}}
+
+                            String[] {{localVariablePrefix}}localVarAccepts = { {{#produces}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/produces}} };
+                            String[] {{localVariablePrefix}}localVarContentTypes = { {{#consumes}}"{{{mediaType}}}"{{#hasMore}}, {{/hasMore}}{{/consumes}} };
+                            String[] {{localVariablePrefix}}localVarAuthNames = new String[] { {{#authMethods}}"{{name}}"{{#hasMore}}, {{/hasMore}}{{/authMethods}} };
+
+                            {{#returnType}}
+                            TypeReference<{{{returnType}}}> {{localVariablePrefix}}localVarReturnType = new TypeReference<{{{returnType}}}>() {};
+                            {{localVariablePrefix}}apiClient.invokeAPI({{localVariablePrefix}}localVarPath, "{{httpMethod}}", {{localVariablePrefix}}localVarQueryParams, {{localVariablePrefix}}localVarBody, {{localVariablePrefix}}localVarHeaderParams, {{localVariablePrefix}}localVarFormParams, {{localVariablePrefix}}localVarAccepts, {{localVariablePrefix}}localVarContentTypes, {{localVariablePrefix}}localVarAuthNames, {{localVariablePrefix}}localVarReturnType, handler, context);
+                            {{/returnType}}
+
+                            {{^returnType}}
+                            {{localVariablePrefix}}apiClient.invokeAPI({{localVariablePrefix}}localVarPath, "{{httpMethod}}", {{localVariablePrefix}}localVarQueryParams, {{localVariablePrefix}}localVarBody, {{localVariablePrefix}}localVarHeaderParams, {{localVariablePrefix}}localVarFormParams, {{localVariablePrefix}}localVarAccepts, {{localVariablePrefix}}localVarContentTypes, {{localVariablePrefix}}localVarAuthNames, null, handler, context);
+                            {{/returnType}}
+                        })).toObservable().subscribeOn(Schedulers.io());
+                    }
+                };
+
+                observableCommand.observe().subscribe(
+                    next -> context.runOnContext(v2 -> resultHandler.handle(Future.succeededFuture(next))),
+                    cause -> context.runOnContext(v2 -> resultHandler.handle(Future.failedFuture(cause)))
+                );
+            });
+        {{#useRxJava2}} })){{^returnType}}.toCompletable(){{/returnType}};{{/useRxJava2}}
+    }
+    {{/operation}}
+}
+{{/operations}}

@@ -1,0 +1,59 @@
+package {{invokerPackage}};
+
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.MultiMap;
+
+import ir.piana.dev.core.api.exception.RemoteException;
+
+import java.util.Map;
+
+public class ApiException extends RemoteException {
+
+    private Integer statusCode = 0;
+
+    public ApiException(Integer statusCode, String code) {
+        super(code);
+        this.statusCode = statusCode;
+    }
+
+    public ApiException(Integer statusCode, String code, Map<String, Object> params) {
+        super(code, params);
+        this.statusCode = statusCode;
+    }
+
+    public ApiException(Throwable cause, Integer statusCode, String code) {
+        super(cause, code);
+        this.statusCode = statusCode;
+    }
+
+    public ApiException(Throwable cause, Integer statusCode, String code, Map<String, Object> params) {
+        super(cause, code, params);
+        this.statusCode = statusCode;
+    }
+
+    public static <T> AsyncResult<T> fail(ApiException cause) {
+        return Future.failedFuture(cause);
+    }
+
+    public static <T> AsyncResult<T> fail(Integer statusCode, String code) {
+        return Future.failedFuture(new ApiException(statusCode, code));
+    }
+
+
+    public static <T> AsyncResult<T> fail(Integer statusCode, String code, Map<String, Object> params) {
+        return Future.failedFuture(new ApiException(statusCode, code, params));
+    }
+
+    public static <T> AsyncResult<T> fail(Throwable cause, Integer statusCode, String code) {
+        return Future.failedFuture(new ApiException(cause, statusCode, code));
+    }
+
+    public static <T> AsyncResult<T> fail(Throwable cause, Integer statusCode, String code, Map<String, Object> params) {
+        return Future.failedFuture(new ApiException(cause, statusCode, code, params));
+    }
+
+    public Integer getStatusCode() {
+        return statusCode;
+    }
+}

@@ -1,0 +1,29 @@
+            service.{{operationId}}({{#hasParams}}{{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}{{/hasParams}}).subscribe(
+            {{#returnType}}
+                result -> {
+                    final DeliveryOptions options = new DeliveryOptions();
+                {{#isListContainer}}
+                    final String strResult = Json.encode(result);
+                    options.addHeader(HttpHeaders.CONTENT_TYPE,MediaType.APPLICATION_JSON_VALUE);
+                {{/isListContainer}}
+                {{^isListContainer}}
+                    {{#returnTypeIsPrimitive}}
+                    final String strResult = String.valueOf(result);
+                    {{#produces}}
+                    options.addHeader(HttpHeaders.CONTENT_TYPE,"{{{mediaType}}}");
+                    {{/produces}}
+                    {{/returnTypeIsPrimitive}}
+                    {{^returnTypeIsPrimitive}}
+                    final String strResult = Json.encode(result);
+                    {{/returnTypeIsPrimitive}}
+                    options.addHeader(HttpHeaders.CONTENT_TYPE,MediaType.APPLICATION_JSON_VALUE);
+                {{/isListContainer}}
+                    logCompletion(serviceId, httpMethod, startTime);
+                    message.reply(strResult, options);
+            {{/returnType}}
+            {{^returnType}}
+                () -> {
+                    logCompletion(serviceId, httpMethod, startTime);
+                    message.reply(null);
+            {{/returnType}}
+                }, error -> handleException(message, serviceId, httpMethod, error, startTime));

@@ -1,0 +1,287 @@
+buildscript {
+    ext {
+        springBootVersion = '2.1.3.RELEASE'
+        springCloudVersion = 'Greenwich.RELEASE'
+//        vertxVersion = '3.5.3'
+        vertxVersion = '3.7.1'
+        h2Version = '1.4.196'
+        jedisVersion = '2.9.0'
+        eurekaClientVersion = '1.9.2'
+        apacheCommonsVersion = '3.4'
+        icuVersion = '59.1'
+        swaggerPluginVersion = '2.12.0'
+        swaggerAnnotationsVersion = '1.5.20'
+        swaggerCodeGeneratorVersion = '2.3.1'
+        vertxSwaggerVersion = '1.6.0'
+        sonarqubeVersion = '2.6.2'
+        embeddedRedisVersion = '0.6'
+        logstashLogbackEncoderVersion = '5.2'
+        logbackClassicVersion = '1.2.3'
+        lombokVersion = '1.18.4'
+        querydslVersion = '4.2.1'
+        testContainersVersion = '1.8.0'
+        cucumberVersion = '4.0.0'
+        oltuVersion = "1.0.1"
+        retrofitVersion = "2.3.0"
+        junitVersion = "5.+"
+        jsonFireVersion = "1.8.0"
+        picocontainerVersion = "2.15"
+        mockitoVersion = "2.+"
+        hazelcastVersion = "3.10.6"
+        javaJwtVersion = "3.4.+"
+        mapstructVersion= "1.3.0.Final"
+        twilioVersion="7.32.0"
+        awaitility="3.1.6"
+    }
+
+    repositories {
+        mavenCentral()
+        maven { url 'https://plugins.gradle.org/m2' }
+    }
+
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+        classpath "gradle.plugin.org.hidetake:gradle-swagger-generator-plugin:${swaggerPluginVersion}"
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:${sonarqubeVersion}"
+        classpath "net.ltgt.gradle:gradle-apt-plugin:0.19"
+    }
+}
+
+apply plugin: "org.sonarqube"
+apply from: file('gradle/heroku/clean.gradle')
+
+allprojects {
+    apply plugin: 'java'
+}
+
+subprojects {
+    // Project group and version
+    group 'ir.piana.dev'
+    version '1.0-SNAPSHOT'
+
+    tasks.withType(JavaCompile) {
+        options.compilerArgs = [
+                '-Amapstruct.suppressGeneratorTimestamp=true'
+        ]
+    }
+
+    // General Plugins
+    apply plugin: 'jacoco'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'spring-transaction-validator'
+    apply plugin: 'net.ltgt.apt'
+
+    // General configurations such as java version, charset, and etc
+    def javaVersion = '1.8'
+    def defaultEncoding = 'UTF-8'
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    tasks.withType(JavaCompile) { options.encoding = defaultEncoding }
+    tasks.withType(Javadoc) { options.encoding = defaultEncoding }
+
+    sourceSets.main.java.srcDir "${buildDir}/generated/source/apt/main"
+    sourceSets.test.java.srcDir "${buildDir}/generated/source/apt/test"
+
+    repositories {
+        mavenCentral()
+        maven { url 'https://plugins.gradle.org/m2' }
+    }
+
+    // Artifacts
+    jar {
+        manifest.attributes provider: 'gradle'
+        manifest.attributes version: version
+    }
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+    artifacts {
+        archives sourcesJar
+        // archives javadocJar // Uncomment this to generate javadoc whenever you want.
+    }
+    test {
+
+        // maxParallelForks = 4
+    }
+
+    dependencyManagement {
+        dependencies {
+//            dependency 'io.reactivex:rxjava:1.3.8'
+        }
+        imports {
+            mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        }
+    }
+
+    dependencies {
+        compileOnly "org.springframework.boot:spring-boot-configuration-processor"
+        compile 'org.springframework:spring-web'
+        compile "org.springframework.boot:spring-boot-starter-actuator"
+        compile "org.springframework.boot:spring-boot-starter-aop"
+        compile "org.springframework.boot:spring-boot-starter-validation"
+        compile "org.springframework.boot:spring-boot-starter-data-jpa"
+        compile "org.springframework.boot:spring-boot-starter-data-redis"
+        compile "org.springframework.boot:spring-boot-starter-batch"
+        compile "org.springframework.boot:spring-boot-starter-logging"
+        compile "org.springframework.boot:spring-boot-starter-cache"
+        compile "org.springframework.cloud:spring-cloud-starter-netflix-hystrix"
+        compile "org.springframework.cloud:spring-cloud-starter-bus-kafka"
+        compile "org.springframework.boot:spring-boot-starter-freemarker"
+        compile "org.hibernate:hibernate-envers"
+        compile "io.vertx:vertx-core:${vertxVersion}"
+        compile "io.vertx:vertx-web:${vertxVersion}"
+        compile "io.vertx:vertx-web-client:${vertxVersion}"
+        compile("io.vertx:vertx-junit5:${vertxVersion}") {
+            exclude group: 'org.junit.jupiter'
+        }
+        compile "redis.clients:jedis:${jedisVersion}"
+        compile "com.h2database:h2:${h2Version}"
+        compile "org.apache.commons:commons-lang3:${apacheCommonsVersion}"
+        compile "com.fasterxml.jackson.datatype:jackson-datatype-joda"
+        compile "com.ibm.icu:icu4j:${icuVersion}"
+        compile "net.logstash.logback:logstash-logback-encoder:${logstashLogbackEncoderVersion}"
+        compile "ch.qos.logback:logback-classic:${logbackClassicVersion}"
+        compile "org.projectlombok:lombok:${lombokVersion}"
+        compile("io.swagger:swagger-codegen:${swaggerCodeGeneratorVersion}") {
+            exclude group: 'org.slf4j'
+            exclude group: 'com.google.code.gson'
+        }
+        compile "com.github.phiz71:vertx-swagger-router:${vertxSwaggerVersion}"
+        compile fileTree(dir: "${rootProject.projectDir}/libs", include: "*.jar")
+
+        compile "com.querydsl:querydsl-jpa:${querydslVersion}"
+        compile "com.querydsl:querydsl-apt:${querydslVersion}"
+        compile "com.hazelcast:hazelcast-spring:${hazelcastVersion}"
+
+        compile "org.mapstruct:mapstruct:${mapstructVersion}"
+        compile "org.mapstruct:mapstruct-jdk8:${mapstructVersion}"
+
+        annotationProcessor("org.mapstruct:mapstruct-processor:${mapstructVersion}")
+        annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+
+    if (it.name == 'core') return
+
+    dependencies {
+        compile project(':core')
+    }
+
+    apply plugin: 'org.springframework.boot'
+
+    jar {
+        enabled = true
+    }
+
+    bootJar {
+        classifier = 'boot'
+    }
+
+    apply plugin: 'org.hidetake.swagger.generator'
+
+    dependencies {
+        compile "org.springframework.cloud:spring-cloud-starter-config"
+        swaggerCodegen project(':core')
+        swaggerCodegen("io.swagger:swagger-codegen-cli:${swaggerCodeGeneratorVersion}") {
+            exclude group: 'ch.qos.logback'
+            exclude group: 'org.slf4j'
+        }
+    }
+
+    ext.packageName = toPackageName(project.name)
+
+    swaggerSources {
+        "${packageName}Server" {
+            inputFile = file("src/main/resources/static/${packageName}/swagger/api.yaml")
+            code {
+                language = 'ir.piana.dev.core.generator.swagger.SpringVertXCodegen'
+                outputDir = file("${buildDir}/generated/swagger/server")
+                templateDir = file("${rootProject.projectDir}/core/src/main/resources/swagger/core/template/JavaVertXServer")
+                additionalProperties = [
+                        'rxInterface' : 'true',
+                        'dateLibrary' : 'legacy',
+                        'apiPackage'  : "ir.piana.dev.${packageName}.server.api.service",
+                        'modelPackage': "ir.piana.dev.${packageName}.server.api.dto",
+                ]
+            }
+        }
+    }
+    swaggerSources."${packageName}Server".code.dependsOn ':core:build'
+    compileJava.dependsOn swaggerSources."${packageName}Server".code
+    sourceSets.main.java.srcDir "${swaggerSources."${packageName}Server".code.outputDir}/src/main/java"
+    sourceSets.main.resources.srcDir "${swaggerSources."${packageName}Server".code.outputDir}/src/main/resources"
+
+    ext.buildClients = { modules ->
+        modules.each { module ->
+            ext.packageName = toPackageName(module)
+
+            swaggerSources {
+                "${packageName}Client" {
+                    inputFile = file("${rootProject.projectDir}/${module}/src/main/resources/static/${packageName}/swagger/api.yaml")
+                    code {
+                        language = 'java'
+                        outputDir = file("${buildDir}/generated/swagger/client/${module}")
+                        templateDir = file("$rootProject.projectDir/core/src/main/resources/swagger/core/template/Java/libraries/vertx")
+                        additionalProperties = [
+                                'library'     : 'vertx',
+                                'dateLibrary' : 'legacy',
+                                'useRxJava2'  : 'true',
+                                'apiPackage'  : "ir.piana.dev.${packageName}.client.api.service",
+                                'modelPackage': "ir.piana.dev.${packageName}.client.api.dto",
+                        ]
+                    }
+                }
+            }
+            swaggerSources."${packageName}Client".code.dependsOn ':core:build'
+            compileJava.dependsOn swaggerSources."${packageName}Client".code
+            sourceSets.main.java.srcDir "${swaggerSources."${packageName}Client".code.outputDir}/src/main/java"
+        }
+    }
+
+    configurations {
+        mapstruct
+        querydslapt
+    }
+
+    task generateQueryDSL(type: JavaCompile, group: 'build', description: 'Generates the QueryDSL query types') {
+        source = sourceSets.main.java
+        classpath = configurations.compile + configurations.querydslapt
+        options.compilerArgs = [
+                '-proc:only',
+                '-processor', 'com.querydsl.apt.jpa.JPAAnnotationProcessor' +
+                        ',lombok.launch.AnnotationProcessorHider$AnnotationProcessor'
+        ]
+        destinationDir = file("${buildDir}/generated/querydsl/")
+    }
+
+    sourceSets.main.java.srcDir "${buildDir}/generated/querydsl/"
+
+    compileJava {
+        dependsOn generateQueryDSL
+    }
+
+    generateQueryDSL.dependsOn {
+        tasks.findAll { task -> task.name.startsWith('generateSwaggerCode') }
+    }
+
+    apply from: file("$rootProject.projectDir/gradle/heroku/stage.gradle")
+}
+
+sonarqube {
+    properties {
+        property "sonar.exclusions", "**/build/generated/**"
+    }
+}
+
+static def toPackageName(String value) {
+    return value.toLowerCase().replaceAll("_", "").replaceAll("-", "")
+}

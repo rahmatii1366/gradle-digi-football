@@ -1,0 +1,70 @@
+package {{package}};
+
+import io.vertx.core.eventbus.DeliveryOptions;
+import io.vertx.core.eventbus.Message;
+import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
+import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
+
+{{#imports}}import {{import}};
+{{/imports}}
+
+import ir.piana.dev.core.api.dto.ErrorDto;
+import ir.piana.dev.core.api.swagger.BaseApiVerticle;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+@Component
+public class {{classname}}Verticle extends BaseApiVerticle {
+
+    private static final Logger logger = LoggerFactory.getLogger({{classname}}Verticle.class);
+
+    {{#operations}}{{#operation}}{{#vendorExtensions}}private final static String {{x-serviceid-varname}} = "{{x-serviceid}}";{{/vendorExtensions}}
+    {{/operation}}{{/operations}}
+    @Autowired
+    private {{classname}} service;
+
+    @Override
+    public void start() throws Exception {
+        {{#operations}}{{#operation}}
+        registerConsumer({{#vendorExtensions}}"{{httpMethod}}", {{x-serviceid-varname}}{{/vendorExtensions}}, (message, serviceId, httpMethod, startTime) -> {
+            {{#hasParams}}
+                {{#allParams}}
+                    {{#isListContainer}}
+            {{{dataType}}} {{paramName}} = Json.mapper.readValue(Optional.ofNullable(message.body().getJsonArray("{{baseName}}")).map(JsonArray::encode).orElse("[]"),
+                    Json.mapper.getTypeFactory().constructCollectionType(List.class, {{{baseType}}}.class));
+                    {{/isListContainer}}
+                    {{^isListContainer}}
+                        {{#isPrimitiveType}}
+                            {{#isString}}
+            {{{dataType}}} {{paramName}} = message.body().getString("{{baseName}}");
+                            {{/isString}}
+                            {{^isString}}
+            {{{dataType}}} {{paramName}} = Json.mapper.readValue(message.body().getString("{{baseName}}"), {{{dataType}}}.class);
+                            {{/isString}}
+                        {{/isPrimitiveType}}
+                        {{^isPrimitiveType}}
+            {{{dataType}}} {{paramName}} = Json.mapper.readValue(message.body().getJsonObject("{{baseName}}").encode(), {{{dataType}}}.class);
+                        {{/isPrimitiveType}}
+                    {{/isListContainer}}
+                {{/allParams}}
+            {{/hasParams}}
+            {{#rxInterface}}
+{{>RxCall}}
+            {{/rxInterface}}
+            {{^rxInterface}}
+{{>AsyncCall}}
+            {{/rxInterface}}
+        });
+        {{/operation}}{{/operations}}
+    }
+}

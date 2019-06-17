@@ -1,0 +1,26 @@
+package {{invokerPackage}};
+
+import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
+
+import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Objects;
+
+@Component("{{invokerPackage}}.configuration")
+public class Configuration {
+
+    @Autowired
+    private static ApiClient defaultApiClient;
+
+    /**
+     * Get the default API client, which would be used when creating API
+     * instances without providing an API client.
+     *
+     * @return Default API client
+     */
+    public synchronized static ApiClient getDefaultApiClient() {
+        return defaultApiClient;
+    }
+}
