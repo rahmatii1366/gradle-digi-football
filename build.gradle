@@ -279,17 +279,17 @@ subprojects {
         from "$buildDir/libs"
         into "$rootProject.buildDir/libs"
     }
-
-    build {
-        dependsOn copyToLib
-    }
     
     copyToLib {
         dependsOn 'bootJar'
     }
 
-//    task stage(group: 'build', dependsOn: 'copyTolib')
-    
+    task stage(group: 'build', dependsOn: 'copyToLib')
+
+    build {
+        dependsOn stage
+    }
+
 //    task stage(dependsOn: ['clean', 'build'])
 
 //    stage.dependsOn {

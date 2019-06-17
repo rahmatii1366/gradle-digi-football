@@ -7,7 +7,7 @@ X-Bitex-Consumer-Code: Test
   "token": "1234"
 }
 ###
-POST https://gradle-digi-football.herokuapp.com:8080/user/post-test
+POST https://gradle-digi-football.herokuapp.com/user/post-test
 Content-Type: application/json
 X-Bitex-Consumer-Code: Test
 
