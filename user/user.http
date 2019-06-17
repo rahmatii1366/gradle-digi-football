@@ -1,4 +1,4 @@
-POST http://localhost:8080/user/post-test
+POST http://localhost:9090/user/post-test
 Content-Type: application/json
 X-Bitex-Consumer-Code: Test
 

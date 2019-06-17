@@ -36,8 +36,17 @@ public class MainApiVerticle extends AbstractVerticle {
     private static final Logger logger = LoggerFactory.getLogger(MainApiVerticle.class);
 
     public static final String SERVICE_URL = "{{host}}";
-    public static final String SERVICE_NAME = SERVICE_URL.replaceAll(":{{serverPort}}", "");
-    public static final Integer SERVICE_PORT = {{serverPort}};
+    public static final String SERVICE_NAME;// = SERVICE_URL.replaceAll(":{{serverPort}}", "");
+    public static final Integer SERVICE_PORT;// = {{serverPort}};
+
+    static {
+        String randomPort = System.getenv("PORT");
+        if(randomPort != null && !randomPort.isEmpty())
+            SERVICE_PORT = Integer.valueOf(randomPort);
+        else
+            SERVICE_PORT = {{serverPort}};
+        SERVICE_NAME = SERVICE_URL.replaceAll(":" + SERVICE_PORT, "");
+    }
 
     private final AtomicReference<HttpServer> mainHttpServer = new AtomicReference<>();
 
