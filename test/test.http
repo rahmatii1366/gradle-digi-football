@@ -1,0 +1,19 @@
+GET http://localhost:8080
+
+###
+POST http://localhost:8080/test/post-test/2
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "token": "1234"
+}
+###
+POST https://gradle-digi-football.herokuapp.com/test/post-test
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "token": "1234"
+}
+###

@@ -124,6 +124,8 @@ subprojects {
     dependencies {
         compileOnly "org.springframework.boot:spring-boot-configuration-processor"
         compile 'org.springframework:spring-web'
+        compile 'org.springframework.boot:spring-boot-starter-mail'
+        compile 'com.github.ulisesbocchio:jasypt-spring-boot-starter:2.1.1'
         compile "org.springframework.boot:spring-boot-starter-actuator"
         compile "org.springframework.boot:spring-boot-starter-aop"
         compile "org.springframework.boot:spring-boot-starter-validation"
@@ -142,6 +144,7 @@ subprojects {
         compile("io.vertx:vertx-junit5:${vertxVersion}") {
             exclude group: 'org.junit.jupiter'
         }
+        testCompile group: 'junit', name: 'junit', version: '4.12'
         compile "redis.clients:jedis:${jedisVersion}"
         compile "com.h2database:h2:${h2Version}"
         compile "org.apache.commons:commons-lang3:${apacheCommonsVersion}"

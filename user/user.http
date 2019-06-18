@@ -1,22 +1,26 @@
 GET http://localhost:8080
 
 ###
-POST http://localhost:9090/user/post-test
+POST http://localhost:8080/user/credential/sign-up
 Content-Type: application/json
-X-Bitex-Consumer-Code: Test
 
 {
-  "userId": 1,
-  "token": "1234"
+  "email": "rahmatii1366@gmail.com"
 }
 ###
-POST https://gradle-digi-football.herokuapp.com/user/post-test
+GET http://localhost:8080/user/credential/sign-up/verify?link=11a9f404-725f-4711-80ab-9b13708a652a&mail=rahmatii1366@gmail.com
+
+###
+GET http://localhost:8080/
+
+###
+POST https://gradle-digi-football.herokuapp.com/user/credential/sign-up
 Content-Type: application/json
-X-Bitex-Consumer-Code: Test
 
 {
-  "userId": 1,
-  "token": "1234"
+  "email": "rahmatii1366@gmail.com"
 }
+###
+GET https://gradle-digi-football.herokuapp.com/user/credential/sign-up/verify?mail=rahmatii1366@gmail.com&link=de9c1196-cded-465a-b51a-e8dab5b14057
 
 ###

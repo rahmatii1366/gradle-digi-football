@@ -63,7 +63,6 @@ public class MainApiVerticle extends AbstractVerticle {
     public void init(Vertx vertx, Context context) {
         super.init(vertx, context);
         router = Router.router(vertx);
-        router.route("/*").handler(StaticHandler.create());
     }
 
     @Override
@@ -83,6 +82,7 @@ public class MainApiVerticle extends AbstractVerticle {
                 options.setSendTimeout(messageTimeout);
                 return options;
             });
+            router.route("/*").handler(StaticHandler.create());
             return Future.succeededFuture(swaggerRouter);
         }).compose(swaggerRouter -> {
             final CompositeFuture verticlesFuture = deployVerticles();

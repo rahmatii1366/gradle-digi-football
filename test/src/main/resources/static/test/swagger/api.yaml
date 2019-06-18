@@ -1,0 +1,30 @@
+swagger: '2.0'
+info:
+  description: This is a swagger config for Bitex Trader
+  version: 0.1.1
+  title: Bitex Project - Trader
+host: '127.0.0.1:8080'
+schemes:
+  - http
+paths:
+  '/test/post-test':
+    post:
+      tags:
+        - Test
+      summary: user post test
+      operationId: postTest
+      parameters:
+        - in: body
+          name: argument
+          required: true
+          schema:
+            $ref: './dto.yaml#/definitions/PostDto'
+      responses:
+        '200':
+          description: Successful operation.
+          schema:
+            $ref: './dto.yaml#/definitions/ResponseDto'
+        '500':
+          description: Error occurred during execution of request.
+          schema:
+            $ref: './dto.yaml#/definitions/UserErrorDto'

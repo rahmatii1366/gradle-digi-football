@@ -1,0 +1,7 @@
+jar {
+    baseName = 'digi-football-test'
+    archivesBaseName = baseName
+    manifest.attributes title: 'Digi Footall Test'
+}
+
+//buildClients(['project-name'])

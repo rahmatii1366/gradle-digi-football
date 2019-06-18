@@ -1,25 +1,53 @@
 definitions:
-  UserErrorDto:
+  ResponseDto:
     type: object
-    title: ErrorDto
     properties:
       code:
-        type: string
-        example: com.bitex.common.default-error
-      description:
-        type: string
-        example: Error occurred in executing the operation
-  PostDto:
-    type: object
-    properties:
-      userId:
         type: integer
-        format: int64
-      token:
-        type: string
-  ResponseDto:
+      cargo:
+        type: object
+  SignUpDto:
     type: object
     properties:
       email:
         type: string
-        example: sample@example.com
+      password:
+        type: string
+  SignupPasswordDto:
+    type: object
+    properties:
+      password:
+        type: string
+  LoginDto:
+    type: object
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+  PersonInfoDto:
+    type: object
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      birthYear:
+        type: integer
+      birthMonth:
+        type: integer
+      birthDay:
+        type: integer
+      nationalCode:
+        type: string
+  PersonPictureDto:
+    type: object
+    properties:
+      picture:
+        type: string
+      format:
+        type: string
+      width:
+        type: integer
+      height:
+        type: integer

@@ -1,7 +1,7 @@
-package ir.piana.dev.user;
+package ir.piana.dev.test;
 
 import io.vertx.core.Vertx;
-import ir.piana.dev.user.server.api.service.MainApiVerticle;
+import ir.piana.dev.test.server.api.service.MainApiVerticle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +13,11 @@ import org.springframework.context.event.EventListener;
 
 /**
  * @author Mohamad Rahmati (rahmatii1366@gmail.com)
- * Date: 6/16/2019 6:08 PM
+ * Date: 6/18/2019 2:22 PM
  **/
 @SpringBootApplication(scanBasePackages = "ir.piana.dev")
-public class UserService {
-    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+public class TestService {
+    private static final Logger logger = LoggerFactory.getLogger(TestService.class);
 
     @Autowired
     private Vertx vertx;
@@ -27,7 +27,7 @@ public class UserService {
 
     public static void main(String[] args) {
         System.setProperty("spring.application.name", MainApiVerticle.SERVICE_NAME);
-        SpringApplication.run(UserService.class, args);
+        SpringApplication.run(TestService.class, args);
     }
 
     @EventListener(ApplicationReadyEvent.class)

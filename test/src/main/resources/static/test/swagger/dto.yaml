@@ -1,0 +1,25 @@
+definitions:
+  UserErrorDto:
+    type: object
+    title: ErrorDto
+    properties:
+      code:
+        type: string
+        example: com.bitex.common.default-error
+      description:
+        type: string
+        example: Error occurred in executing the operation
+  PostDto:
+    type: object
+    properties:
+      userId:
+        type: integer
+        format: int64
+      token:
+        type: string
+  ResponseDto:
+    type: object
+    properties:
+      email:
+        type: string
+        example: sample@example.com

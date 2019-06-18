@@ -22,16 +22,16 @@ paths:
           name: argument
           required: true
           schema:
-            $ref: './dto.yaml#/definitions/SignUpDto'
+            $ref: '#/definitions/SignUpDto'
       responses:
         '200':
           description: Successful operation.
           schema:
-            $ref: './dto.yaml#/definitions/ResponseDto'
+            $ref: '#/definitions/ResponseDto'
         '500':
           description: Error occurred during execution of request.
           schema:
-            $ref: './dto.yaml#/definitions/ResponseDto'
+            $ref: '#/definitions/ResponseDto'
       x-contentType: application/json
       x-accepts: application/json
   /user/credential/sign-up/verify:
@@ -47,26 +47,22 @@ paths:
           type: string
           name: link
           required: true
-        - in: query
-          type: string
-          name: mail
-          required: true
       responses:
         '200':
           description: Successful operation.
           schema:
-            $ref: './dto.yaml#/definitions/ResponseDto'
+            $ref: '#/definitions/ResponseDto'
         '500':
           description: Error occurred during execution of request.
           schema:
-            $ref: './dto.yaml#/definitions/ResponseDto'
+            $ref: '#/definitions/ResponseDto'
       x-accepts: application/json
-  /user/credential/signup/reset-password:
+  /user/credential/signup/set-password:
     post:
       tags:
         - user
       summary: login with given mobile and password
-      operationId: resetPassword
+      operationId: signupSetPassword
       consumes:
         - application/json
       produces:
@@ -76,16 +72,16 @@ paths:
           name: argument
           required: true
           schema:
-            $ref: './dto.yaml#/definitions/SignupPasswordDto'
+            $ref: '#/definitions/SignupPasswordDto'
       responses:
         '200':
           description: Successful operation.
           schema:
-            $ref: './dto.yaml#/definitions/ResponseDto'
+            $ref: '#/definitions/ResponseDto'
         '500':
           description: Error occurred during execution of request.
           schema:
-            $ref: './dto.yaml#/definitions/ResponseDto'
+            $ref: '#/definitions/ResponseDto'
       x-contentType: application/json
       x-accepts: application/json
   /user/credential/login/password:
@@ -103,16 +99,16 @@ paths:
           name: argument
           required: true
           schema:
-            $ref: './dto.yaml#/definitions/LoginDto'
+            $ref: '#/definitions/LoginDto'
       responses:
         '200':
           description: Successful operation.
           schema:
-            $ref: './dto.yaml#/definitions/ResponseDto'
+            $ref: '#/definitions/ResponseDto'
         '500':
           description: Error occurred during execution of request.
           schema:
-            $ref: './dto.yaml#/definitions/ResponseDto'
+            $ref: '#/definitions/ResponseDto'
       x-contentType: application/json
       x-accepts: application/json
   /user/person/info:
@@ -130,16 +126,16 @@ paths:
           name: argument
           required: true
           schema:
-            $ref: './dto.yaml#/definitions/PersonInfoDto'
+            $ref: '#/definitions/PersonInfoDto'
       responses:
         '200':
           description: Successful operation.
           schema:
-            $ref: './dto.yaml#/definitions/ResponseDto'
+            $ref: '#/definitions/ResponseDto'
         '500':
           description: Error occurred during execution of request.
           schema:
-            $ref: './dto.yaml#/definitions/ResponseDto'
+            $ref: '#/definitions/ResponseDto'
       x-contentType: application/json
       x-accepts: application/json
     put:
@@ -156,16 +152,16 @@ paths:
           name: argument
           required: true
           schema:
-            $ref: './dto.yaml#/definitions/PersonInfoDto'
+            $ref: '#/definitions/PersonInfoDto'
       responses:
         '200':
           description: Successful operation.
           schema:
-            $ref: './dto.yaml#/definitions/ResponseDto'
+            $ref: '#/definitions/ResponseDto'
         '500':
           description: Error occurred during execution of request.
           schema:
-            $ref: './dto.yaml#/definitions/ResponseDto'
+            $ref: '#/definitions/ResponseDto'
       x-contentType: application/json
       x-accepts: application/json
     get:
@@ -179,11 +175,11 @@ paths:
         '200':
           description: Successful operation.
           schema:
-            $ref: './dto.yaml#/definitions/ResponseDto'
+            $ref: '#/definitions/ResponseDto'
         '500':
           description: Error occurred during execution of request.
           schema:
-            $ref: './dto.yaml#/definitions/ResponseDto'
+            $ref: '#/definitions/ResponseDto'
       x-accepts: application/json
   /user/person/picture:
     post:
@@ -200,16 +196,16 @@ paths:
           name: argument
           required: true
           schema:
-            $ref: './dto.yaml#/definitions/PersonPictureDto'
+            $ref: '#/definitions/PersonPictureDto'
       responses:
         '200':
           description: Successful operation.
           schema:
-            $ref: './dto.yaml#/definitions/ResponseDto'
+            $ref: '#/definitions/ResponseDto'
         '500':
           description: Error occurred during execution of request.
           schema:
-            $ref: './dto.yaml#/definitions/ResponseDto'
+            $ref: '#/definitions/ResponseDto'
       x-contentType: application/json
       x-accepts: application/json
     delete:
@@ -223,9 +219,60 @@ paths:
         '200':
           description: Successful operation.
           schema:
-            $ref: './dto.yaml#/definitions/ResponseDto'
+            $ref: '#/definitions/ResponseDto'
         '500':
           description: Error occurred during execution of request.
           schema:
-            $ref: './dto.yaml#/definitions/ResponseDto'
+            $ref: '#/definitions/ResponseDto'
       x-accepts: application/json
+definitions:
+  ResponseDto:
+    type: object
+    properties:
+      code:
+        type: integer
+      cargo:
+        type: object
+  SignUpDto:
+    type: object
+    properties:
+      email:
+        type: string
+  SignupPasswordDto:
+    type: object
+    properties:
+      password:
+        type: string
+  LoginDto:
+    type: object
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+  PersonInfoDto:
+    type: object
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      birthYear:
+        type: integer
+      birthMonth:
+        type: integer
+      birthDay:
+        type: integer
+      nationalCode:
+        type: string
+  PersonPictureDto:
+    type: object
+    properties:
+      picture:
+        type: string
+      format:
+        type: string
+      width:
+        type: integer
+      height:
+        type: integer
