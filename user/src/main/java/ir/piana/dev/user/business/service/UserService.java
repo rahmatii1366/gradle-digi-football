@@ -2,6 +2,8 @@ package ir.piana.dev.user.business.service;
 
 import io.reactivex.Completable;
 import io.reactivex.Single;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -17,6 +19,11 @@ import java.util.UUID;
  **/
 @Component
 public class UserService {
+    private Logger logger = LoggerFactory.getLogger(UserService.class);
+
+    @Value("${piana.email.send}")
+    private boolean sendMail;
+
     @Autowired
     private EmailService emailService;
 
@@ -63,7 +70,12 @@ public class UserService {
                 linkMap.put(email, uuid.toString());
                 passwordMap.put(email, password);
             }
-            emailService.sendEmail(email, "ارسال مجدد فعالسازی", link);
+            if(sendMail) {
+                emailService.sendEmail(email, "ارسال مجدد فعالسازی", link);
+                logger.info("email send : " + link);
+            } else
+                logger.info("email not send : " + link);
+            emitter.onSuccess(true);
         });
     }
 

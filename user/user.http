@@ -5,7 +5,8 @@ POST http://localhost:8080/user/credential/sign-up
 Content-Type: application/json
 
 {
-  "email": "rahmatii1366@gmail.com"
+  "email": "rahmatii1366@gmail.com",
+  "password": "12345"
 }
 ###
 GET http://localhost:8080/user/credential/sign-up/verify?link=11a9f404-725f-4711-80ab-9b13708a652a&mail=rahmatii1366@gmail.com

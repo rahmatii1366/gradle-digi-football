@@ -1,9 +1,9 @@
 piana:
   message.timeout: 300000
   email:
-    send: false
+    send: true
     link:
-      prefix: http://localhost:8080/
+      prefix: https://gradle-digi-football.herokuapp.com/
 spring:
 # Disable actuator health check for email
 management:
@@ -28,4 +28,3 @@ logging:
     root: info
     com.bitex: debug
     org.apache.http: debug
-
