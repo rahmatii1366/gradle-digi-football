@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -Dserver.port=$PORT --spring.profiles.active=server -jar build/libs/digi-football-user-1.0-SNAPSHOT-boot.jar
+web: java $JAVA_OPTS -Dserver.port=$PORT -jar build/libs/digi-football-user-1.0-SNAPSHOT-boot.jar --spring.profiles.active=server
