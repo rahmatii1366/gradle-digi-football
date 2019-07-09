@@ -1,7 +1,10 @@
-GET http://localhost:8080
+GET http://localhost:8081
 
 ###
-POST http://localhost:8080/user/credential/sign-up
+GET http://localhost:8081/user/sample/say-hello
+
+###
+POST http://localhost:8081/user/credential/sign-up
 Content-Type: application/json
 
 {
@@ -9,10 +12,10 @@ Content-Type: application/json
   "password": "12345"
 }
 ###
-GET http://localhost:8080/user/credential/sign-up/verify?link=11a9f404-725f-4711-80ab-9b13708a652a&mail=rahmatii1366@gmail.com
+GET http://localhost:8081/user/credential/sign-up/verify?link=11a9f404-725f-4711-80ab-9b13708a652a&mail=rahmatii1366@gmail.com
 
 ###
-GET http://localhost:8080/
+GET http://localhost:8081/
 
 ###
 GET https://gradle-digi-football.herokuapp.com
@@ -22,9 +25,10 @@ POST https://gradle-digi-football.herokuapp.com/user/credential/sign-up
 Content-Type: application/json
 
 {
-  "email": "rahmatii1366@gmail.com"
+  "email": "rahmatii1366@gmail.com",
+  "password": "1234"
 }
 ###
-GET https://gradle-digi-football.herokuapp.com/user/credential/sign-up/verify?mail=rahmatii1366@gmail.com&link=de9c1196-cded-465a-b51a-e8dab5b14057
+GET https://gradle-digi-football.herokuapp.com/user/credential/sign-up/verify?link=41d2ac02-55c0-437d-bccc-e5b212f4654e&mail=rahmatii1366@gmail.com
 
 ###

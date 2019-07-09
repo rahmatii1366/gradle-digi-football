@@ -1,0 +1,5 @@
+CREATE TABLE dgf_user(
+    id SERIAL PRIMARY KEY,
+    email VARCHAR (50) UNIQUE NOT NULL,
+    password VARCHAR (64) NOT NULL
+)

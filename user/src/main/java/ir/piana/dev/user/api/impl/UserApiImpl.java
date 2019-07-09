@@ -1,7 +1,7 @@
 package ir.piana.dev.user.api.impl;
 
 import io.reactivex.Single;
-import ir.piana.dev.user.business.service.UserService;
+import ir.piana.dev.user.business.operation.UserOperation;
 import ir.piana.dev.user.server.api.dto.*;
 import ir.piana.dev.user.server.api.service.UserApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +15,11 @@ import org.springframework.stereotype.Component;
 public class UserApiImpl implements UserApi {
 
     @Autowired
-    private UserService userService;
+    private UserOperation userOperation;
 
     @Override
     public Single<ResponseDto> signup(SignUpDto argument) {
-        return userService.sendVerification(argument.getEmail(), argument.getPassword())
+        return userOperation.sendVerification(argument.getEmail(), argument.getPassword())
                 .map(b -> {
                     ResponseDto responseDto = new ResponseDto();
                     if(b) {
@@ -35,7 +35,7 @@ public class UserApiImpl implements UserApi {
 
     @Override
     public Single<ResponseDto> signupVerify(String link, String mail) {
-        return userService.verifyEmail(link, mail).map(b -> {
+        return userOperation.verifyEmail(link, mail).map(b -> {
             ResponseDto responseDto = new ResponseDto();
             if(b) {
                 responseDto.setCode(0);
@@ -50,7 +50,7 @@ public class UserApiImpl implements UserApi {
 
     @Override
     public Single<ResponseDto> resetPassword(SignupPasswordDto argument) {
-        return userService.setPassword(argument.getPassword(), argument.getPassword())
+        return userOperation.setPassword(argument.getPassword(), argument.getPassword())
                 .map(b -> {
                     ResponseDto responseDto = new ResponseDto();
                     if(b) {
@@ -77,6 +77,11 @@ public class UserApiImpl implements UserApi {
     @Override
     public Single<ResponseDto> savePersonInfo(PersonInfoDto argument) {
         return null;
+    }
+
+    @Override
+    public Single<SampleDto> sayHello() {
+        return Single.just(new SampleDto().builder().message("hello world!").build());
     }
 
     @Override

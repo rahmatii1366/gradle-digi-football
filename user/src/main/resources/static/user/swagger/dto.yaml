@@ -1,4 +1,9 @@
 definitions:
+  SampleDto:
+    type: object
+    properties:
+      message:
+        type: string
   ResponseDto:
     type: object
     properties:

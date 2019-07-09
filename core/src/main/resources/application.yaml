@@ -1,0 +1,44 @@
+server:
+  port: 8080
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  profiles.active: test
+  cache:
+    type: hazelcast
+  output:
+    ansi:
+      enabled: always
+  datasource:
+    hikari:
+      maximum-pool-size: 20
+  jpa:
+    properties:
+      hibernate:
+        order_inserts: true
+        order_updates: true
+        jdbc:
+          batch_size: 5000
+          batch_versioned_data: true
+      jadira.usertype.autoRegisterUserTypes: true
+  cloud:
+    config:
+      enabled: false
+    bus:
+      enabled: false
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: iran.digifootball@gmail.com
+    password: ENC(Qv11tF6Sf8Ym4+cpQgmEJ2CA85u3beKR)
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls.enable: true
+jasypt:
+  encryptor:
+    password: test
+    property:
+      prefix: "ENC("
+      suffix: ")"

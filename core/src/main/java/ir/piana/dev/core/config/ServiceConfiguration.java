@@ -25,8 +25,8 @@ import java.lang.annotation.*;
 @Configuration
 @EnableAsync
 @EnableCaching
-@EnableRedisRepositories(basePackages = "ir.piana.dev.**.core.redis.repository")
-@EnableJpaRepositories(basePackages = "ir.piana.dev.**.core.repository")
+@EnableRedisRepositories(basePackages = "ir.piana.dev.**.business.redis.repo")
+@EnableJpaRepositories(basePackages = "ir.piana.dev.**.business.data.repo")
 @EntityScan("ir.piana.dev")
 @EnableTransactionManagement
 @EnableConfigurationProperties

@@ -3,10 +3,29 @@ info:
   description: This is a swagger config for Digi Football
   version: 1.0.0
   title: Digi Football - User
-host: 'localhost:8080'
+host: 'localhost:8081'
 schemes:
   - http
 paths:
+  /user/sample/say-hello:
+    get:
+      tags:
+        - user
+      summary: say hello for test
+      operationId: sayHello
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successful operation.
+          schema:
+            $ref: './dto.yaml#/definitions/SampleDto'
+        '500':
+          description: Error occurred during execution of request.
+          schema:
+            $ref: './dto.yaml#/definitions/ResponseDto'
+      x-contentType: application/json
+      x-accepts: application/json
   /user/credential/sign-up:
     post:
       tags:
@@ -32,7 +51,6 @@ paths:
           description: Error occurred during execution of request.
           schema:
             $ref: './dto.yaml#/definitions/ResponseDto'
-      x-contentType: application/json
       x-accepts: application/json
   /user/credential/sign-up/verify:
     get:

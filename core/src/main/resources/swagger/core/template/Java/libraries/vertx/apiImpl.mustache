@@ -4,10 +4,11 @@ package {{package}};
 {{/imports}}
 
 {{#useRxJava2}}
-import io.reactivex.Completable;
-import io.reactivex.Single;
-import io.reactivex.Observable;
-import io.reactivex.schedulers.Schedulers;
+import hu.akarnokd.rxjava.interop.RxJavaInterop;
+import rx.Completable;
+import rx.Single;
+import rx.Observable;
+import rx.schedulers.Schedulers;
 import io.vertx.rx.java.SingleOnSubscribeAdapter;
 
 import io.vertx.core.Vertx;
@@ -52,8 +53,8 @@ public class {{classname}}Impl implements {{classname}} {
     {{#operation}}
 
     @Override
-    public {{#useRxJava2}}{{>RxMethod}}{{/useRxJava2}} {
-        {{#useRxJava2}}return Single.create(new SingleOnSubscribeAdapter<>(resultHandler -> { {{/useRxJava2}}
+    public io.reactivex.{{#useRxJava2}}{{>RxMethod}}{{/useRxJava2}} {
+        {{#useRxJava2}}return RxJavaInterop.toV2Single(Single.create(new SingleOnSubscribeAdapter<>(resultHandler -> { {{/useRxJava2}}
 
             vertx.runOnContext(v -> {
                 Context context = vertx.getOrCreateContext();
@@ -120,7 +121,7 @@ public class {{classname}}Impl implements {{classname}} {
                     cause -> context.runOnContext(v2 -> resultHandler.handle(Future.failedFuture(cause)))
                 );
             });
-        {{#useRxJava2}} })){{^returnType}}.toCompletable(){{/returnType}};{{/useRxJava2}}
+        {{#useRxJava2}} }))){{^returnType}}.toCompletable(){{/returnType}};{{/useRxJava2}}
     }
     {{/operation}}
 }

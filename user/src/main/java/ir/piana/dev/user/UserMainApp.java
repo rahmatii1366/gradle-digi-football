@@ -2,7 +2,7 @@ package ir.piana.dev.user;
 
 import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import io.vertx.core.Vertx;
-import ir.piana.dev.user.business.service.EmailService;
+import ir.piana.dev.user.business.operation.EmailOperation;
 import ir.piana.dev.user.server.api.service.MainApiVerticle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ public class UserMainApp {
     private MainApiVerticle mainApiVerticle;
 
     @Autowired
-    private EmailService emailService;
+    private EmailOperation emailOperation;
 
     public static void main(String[] args) {
         System.setProperty("spring.application.name", MainApiVerticle.SERVICE_NAME);

@@ -4,4 +4,4 @@ jar {
     manifest.attributes title: 'Digi Footall Test'
 }
 
-//buildClients(['project-name'])
+buildClients(['user'])

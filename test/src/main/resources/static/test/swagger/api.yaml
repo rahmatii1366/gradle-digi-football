@@ -7,6 +7,19 @@ host: '127.0.0.1:8080'
 schemes:
   - http
 paths:
+  '/test':
+    get:
+      tags:
+        - Test
+      summary: get test
+      operationId: getTest
+      responses:
+        '200':
+          description: Successful operation.
+        '500':
+          description: Error occurred during execution of request.
+          schema:
+            $ref: './dto.yaml#/definitions/UserErrorDto'
   '/test/post-test':
     post:
       tags:
