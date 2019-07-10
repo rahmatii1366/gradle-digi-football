@@ -10,9 +10,11 @@ import ir.piana.dev.core.api.exception.ApiBaseException;
 import ir.piana.dev.core.api.exception.AssertionException;
 import ir.piana.dev.core.api.exception.ResourceNotFoundException;
 import ir.piana.dev.core.api.exception.TransactionException;
+import ir.piana.dev.core.api.helper.ExceptionHelper;
 import ir.piana.dev.core.vertx.json.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
@@ -27,11 +29,14 @@ import static org.springframework.core.NestedExceptionUtils.getRootCause;
  * Date: 6/16/2019 5:52 PM
  **/
 public abstract class BaseApiVerticle extends AbstractVerticle {
+    private static final Logger logger = LoggerFactory.getLogger(BaseApiVerticle.class);
 
     protected static final String INTERNAL_ERROR_STATUS_CODE = "500";
     protected static final String NOT_FOUND_STATUS_CODE = "404";
     protected static final String BAD_REQUEST_STATUS_CODE = "400";
-    private static final Logger logger = LoggerFactory.getLogger(BaseApiVerticle.class);
+
+    @Autowired
+    private ExceptionHelper exceptionHelper;
 
     protected final void registerConsumer(
             String httpMethod, String serviceId, Callback service) {
@@ -62,7 +67,12 @@ public abstract class BaseApiVerticle extends AbstractVerticle {
         /*
          ** do action later
          */
-        final ErrorDto errorDto = new ErrorDto("500", "internal server error", new LinkedHashMap());
+        final ErrorDto errorDto = new ErrorDto(
+                exceptionHelper.getErrorCode(userCause),
+                exceptionHelper.getErrorMessage(userCause),
+                exceptionHelper.getErrorParams(userCause));
+
+//        final ErrorDto errorDto = new ErrorDto("500", "internal server error", new LinkedHashMap());
 
         final Throwable mainCause = Optional.ofNullable(getRootCause(userCause)).orElse(userCause);
         final Long executionTime = System.currentTimeMillis() - startTime;
