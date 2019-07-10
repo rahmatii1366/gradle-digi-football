@@ -4,32 +4,26 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.MultiMap;
 
-import ir.piana.dev.core.api.exception.RemoteException;
+import ir.piana.dev.core.api.exception.ApiBaseException;
 
 import java.util.Map;
 
-public class ApiException extends RemoteException {
-
-    private Integer statusCode = 0;
+public class ApiException extends ApiBaseException {
 
     public ApiException(Integer statusCode, String code) {
-        super(code);
-        this.statusCode = statusCode;
+        super(statusCode, code);
     }
 
     public ApiException(Integer statusCode, String code, Map<String, Object> params) {
-        super(code, params);
-        this.statusCode = statusCode;
+        super(statusCode, code, params);
     }
 
-    public ApiException(Throwable cause, Integer statusCode, String code) {
-        super(cause, code);
-        this.statusCode = statusCode;
+    public ApiException(Integer statusCode, Throwable cause, String code) {
+        super(statusCode, cause, code);
     }
 
-    public ApiException(Throwable cause, Integer statusCode, String code, Map<String, Object> params) {
-        super(cause, code, params);
-        this.statusCode = statusCode;
+    public ApiException(Integer statusCode, Throwable cause, String code, Map<String, Object> params) {
+        super(statusCode, cause, code, params);
     }
 
     public static <T> AsyncResult<T> fail(ApiException cause) {
@@ -46,14 +40,10 @@ public class ApiException extends RemoteException {
     }
 
     public static <T> AsyncResult<T> fail(Throwable cause, Integer statusCode, String code) {
-        return Future.failedFuture(new ApiException(cause, statusCode, code));
+        return Future.failedFuture(new ApiException(statusCode, cause, code));
     }
 
     public static <T> AsyncResult<T> fail(Throwable cause, Integer statusCode, String code, Map<String, Object> params) {
-        return Future.failedFuture(new ApiException(cause, statusCode, code, params));
-    }
-
-    public Integer getStatusCode() {
-        return statusCode;
+        return Future.failedFuture(new ApiException(statusCode, cause, code, params));
     }
 }

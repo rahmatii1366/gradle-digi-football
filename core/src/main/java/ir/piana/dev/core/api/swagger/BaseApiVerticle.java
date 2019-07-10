@@ -4,9 +4,13 @@ import com.netflix.hystrix.exception.HystrixRuntimeException;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.eventbus.Message;
-import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import ir.piana.dev.core.api.dto.ErrorDto;
+import ir.piana.dev.core.api.exception.ApiBaseException;
+import ir.piana.dev.core.api.exception.AssertionException;
+import ir.piana.dev.core.api.exception.ResourceNotFoundException;
+import ir.piana.dev.core.api.exception.TransactionException;
+import ir.piana.dev.core.vertx.json.Json;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -69,11 +73,16 @@ public abstract class BaseApiVerticle extends AbstractVerticle {
         options.addHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
         String statusCode = INTERNAL_ERROR_STATUS_CODE;
-        if (userCause instanceof IllegalArgumentException) {
+        if(userCause instanceof TransactionException) {
+            statusCode = INTERNAL_ERROR_STATUS_CODE;
+        } else if (userCause instanceof IllegalArgumentException ||
+                userCause instanceof AssertionException) {
             statusCode = BAD_REQUEST_STATUS_CODE;
-        } /*else if (userCause instanceof ResourceNotFoundException) {
+        } else if (userCause instanceof ResourceNotFoundException) {
             statusCode = NOT_FOUND_STATUS_CODE;
-        }*/
+        } else if (userCause instanceof ApiBaseException) {
+            statusCode = ((ApiBaseException) userCause).getStatusCode().toString();
+        }
 
         options.addHeader(CUSTOM_STATUS_CODE_HEADER_KEY, statusCode);
 
