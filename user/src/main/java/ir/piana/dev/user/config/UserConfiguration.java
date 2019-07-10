@@ -2,7 +2,7 @@ package ir.piana.dev.user.config;
 
 import com.hazelcast.config.Config;
 import ir.piana.dev.core.config.CommonConfiguration;
-import ir.piana.dev.core.config.ServiceConfiguration;
+import ir.piana.dev.core.config.PianaConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,7 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * @author Mohamad Rahmati (rahmatii1366@gmail.com)
  * Date: 6/16/2019 6:07 PM
  **/
-@ServiceConfiguration
+@PianaConfiguration
 public class UserConfiguration extends CommonConfiguration {
 
     @Bean

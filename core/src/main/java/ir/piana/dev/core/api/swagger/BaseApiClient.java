@@ -1,4 +1,4 @@
-package ir.piana.dev.core.config.swagger;
+package ir.piana.dev.core.api.swagger;
 
 /**
  * @author Mohamad Rahmati (rahmatii1366@gmail.com)

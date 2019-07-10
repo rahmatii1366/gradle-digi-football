@@ -33,5 +33,5 @@ import java.lang.annotation.*;
 @ConfigurationProperties
 @EnableScheduling
 @EnableBatchProcessing
-public @interface ServiceConfiguration {
+public @interface PianaConfiguration {
 }
