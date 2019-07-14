@@ -202,7 +202,13 @@ subprojects {
         // https://mvnrepository.com/artifact/com.github.akarnokd/rxjava2-interop
         compile group: 'com.github.akarnokd', name: 'rxjava2-interop', version: '0.13.7'
 
+        // https://mvnrepository.com/artifact/postgresql/postgresql
+//        compile group: 'postgresql', name: 'postgresql', version: '9.1-901-1.jdbc4'
 
+        // https://mvnrepository.com/artifact/org.postgresql/postgresql
+        compile group: 'org.postgresql', name: 'postgresql', version: '42.2.6'
+
+        
         annotationProcessor("org.mapstruct:mapstruct-processor:${mapstructVersion}")
         annotationProcessor("org.projectlombok:lombok:${lombokVersion}")
     }

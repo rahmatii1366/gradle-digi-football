@@ -1,6 +1,7 @@
 package ir.piana.dev.user.api.impl;
 
 import io.reactivex.Single;
+import io.reactivex.SingleSource;
 import ir.piana.dev.user.business.operation.UserOperation;
 import ir.piana.dev.user.server.api.dto.*;
 import ir.piana.dev.user.server.api.service.UserApi;
@@ -19,38 +20,30 @@ public class UserApiImpl implements UserApi {
 
     @Override
     public Single<ResponseDto> signup(SignUpDto argument) {
-        return userOperation.sendVerification(argument.getEmail(), argument.getPassword())
-                .map(b -> {
+        return userOperation.sendVerificationCode(argument.getEmail())
+                .toSingle(() -> {
                     ResponseDto responseDto = new ResponseDto();
-                    if(b) {
-                        responseDto.setCode(0);
-                        responseDto.setCargo("verification link send to email");
-                    } else {
-                        responseDto.setCode(1);
-                        responseDto.setCargo("signup failed");
-                    }
-            return responseDto;
-        });
+                    responseDto.setCode(0);
+                    responseDto.setCargo("verification link send to email");
+                    return responseDto;
+                });
     }
 
     @Override
-    public Single<ResponseDto> signupVerify(String link, String mail) {
-        return userOperation.verifyEmail(link, mail).map(b -> {
+    public Single<ResponseDto> signupVerify(String link) {
+        return userOperation.verifyEmailByLink(link)
+                .andThen((SingleSource<ResponseDto>)  singleObserver -> {
             ResponseDto responseDto = new ResponseDto();
-            if(b) {
-                responseDto.setCode(0);
+            responseDto.setCode(0);
                 responseDto.setCargo("verification successfully");
-            } else {
-                responseDto.setCode(1);
-                responseDto.setCargo("verification failed");
-            }
-            return responseDto;
+            singleObserver.onSuccess(responseDto);
         });
     }
 
     @Override
-    public Single<ResponseDto> resetPassword(SignupPasswordDto argument) {
-        return userOperation.setPassword(argument.getPassword(), argument.getPassword())
+    public Single<ResponseDto> resetPassword(SignupPasswordDto argument, Long xUserId) {
+        return Single.just(new ResponseDto());
+        /*return userOperation.setPassword(argument.getPassword(), argument.getPassword())
                 .map(b -> {
                     ResponseDto responseDto = new ResponseDto();
                     if(b) {
@@ -61,7 +54,7 @@ public class UserApiImpl implements UserApi {
                         responseDto.setCargo("password not reset");
                     }
                     return responseDto;
-                });
+                });*/
     }
 
     @Override

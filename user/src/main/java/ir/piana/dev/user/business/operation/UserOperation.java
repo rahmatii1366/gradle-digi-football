@@ -1,5 +1,6 @@
 package ir.piana.dev.user.business.operation;
 
+import io.reactivex.Completable;
 import io.reactivex.Single;
 
 /**
@@ -7,9 +8,9 @@ import io.reactivex.Single;
  * Date: 6/18/2019 3:19 PM
  **/
 public interface UserOperation {
-    Single<Boolean> sendVerification(String email, String password);
-    public Single<Boolean> verifyEmail(String link, String mail);
-    public Single<Boolean> setPassword(String mail, String password);
+    Completable sendVerificationCode(String email);
+    Completable verifyEmailByLink(String link);
+    Completable resetPassword(Long userId, String password);
 
 //    static void main(String[] args) throws NoSuchAlgorithmException {
 //        SecretKeySpec secret_key = new SecretKeySpec("my-pass".getBytes(), "HmacSHA256");

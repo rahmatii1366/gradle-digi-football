@@ -65,10 +65,6 @@ paths:
           type: string
           name: link
           required: true
-        - in: query
-          type: string
-          name: mail
-          required: true
       responses:
         '200':
           description: Successful operation.
@@ -95,6 +91,11 @@ paths:
           required: true
           schema:
             $ref: './dto.yaml#/definitions/SignupPasswordDto'
+        - in: header
+          name: x-user-id
+          required: true
+          type: integer
+          format: int64
       responses:
         '200':
           description: Successful operation.

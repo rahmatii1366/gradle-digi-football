@@ -6,20 +6,25 @@ piana:
       prefix: https://gradle-digi-football.herokuapp.com/
 spring:
 # Disable actuator health check for email
-management:
-  health:
-    mail:
-      enabled: false
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://raja.db.elephantsql.com:5432/jmlmhzoa
-    username: jmlmhzoa
-    password: LpAQ3hPuomKH1uwWet_3ybpjX602SVZN
+  management:
+    health:
+      mail:
+        enabled: false
   jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL9Dialect
     properties:
       hibernate:
         jdbc.lob.non_contextual_creation: true
-
+        temp:
+          use_jdbc_metadata_defaults: false
+        jdbc:
+          lob:
+            non_contextual_creation: true
+    datasource:
+      driverClassName: org.postgresql.Driver
+      url: jdbc:postgresql://raja.db.elephantsql.com:5432/jmlmhzoa
+      username: jmlmhzoa
+      password: LpAQ3hPuomKH1uwWet_3ybpjX602SVZN
 # Logging settings
 logging:
   pattern:
